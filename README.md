@@ -1,8 +1,16 @@
-# Sales Performance & Profitability Dashboard
+<h1 align="center">Retail Sales &amp; Profitability Analysis</h1>
+
+<p align="center"><b>Which regions, products and discount levels sell a lot but earn little?</b></p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/SQL-4479A1?logo=mysql&logoColor=white" alt="SQL">
+  <img src="https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/pandas-150458?logo=pandas&logoColor=white" alt="pandas">
+  <img src="https://img.shields.io/badge/Matplotlib-11557C" alt="Matplotlib">
+  <img src="https://img.shields.io/badge/Jupyter-F37626?logo=jupyter&logoColor=white" alt="Jupyter">
+</p>
 
 Retail sales analysis on the Superstore data (Jan 2011 to Dec 2014). SQL scripts and Python work out where sales do not turn into profit, and a 3-page dashboard drawn in Python (matplotlib and seaborn) shows the results.
-
-**Business question:** which regions, products and discount levels sell a lot but earn little?
 
 ## Key findings
 
