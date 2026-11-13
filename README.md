@@ -1,84 +1,137 @@
-<h1 align="center">Retail Sales &amp; Profitability Analysis</h1>
+# Retail Sales & Profitability Analysis
 
-<p align="center"><b>Which regions, products and discount levels sell a lot but earn little?</b></p>
+> **Which regions, products and discount levels sell a lot but earn little?**
+> SQL and Python analysis of the Superstore sales data (Jan 2011 to Dec 2014), with a 3-page dashboard drawn in Python.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/SQL-4479A1?logo=mysql&logoColor=white" alt="SQL">
-  <img src="https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white" alt="Python">
-  <img src="https://img.shields.io/badge/pandas-150458?logo=pandas&logoColor=white" alt="pandas">
-  <img src="https://img.shields.io/badge/Matplotlib-11557C" alt="Matplotlib">
-  <img src="https://img.shields.io/badge/Jupyter-F37626?logo=jupyter&logoColor=white" alt="Jupyter">
-</p>
+![Executive overview dashboard](dashboard/overview.png)
 
-Retail sales analysis on the Superstore data (Jan 2011 to Dec 2014). SQL scripts and Python work out where sales do not turn into profit, and a 3-page dashboard drawn in Python (matplotlib and seaborn) shows the results.
+| Sales | Profit | Profit margin | Orders | Customers | Avg. order value |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| **$3.25M** | **$0.40M** | **12.4%** | **6,717** | **795** | **$483** |
 
-## Key findings
+<sub>Computed from `datasets/cleaned/cleaned_sales_data.csv`: 13,297 order lines, 13 regions.</sub>
 
-Computed from `datasets/cleaned/cleaned_sales_data.csv`: 13,297 order lines, 6,717 orders, 795 customers, 13 regions.
+## Where the profit leaks
 
-| Area | Finding |
+### 1. Deep discounts
+
+> [!WARNING]
+> Discounts above 30% turn the margin negative. 2,700 order lines (20.3% of all lines) were sold at that level and lost $197k in total.
+
+| Discount | Order lines | Sales | Profit | Margin |
+| --- | ---: | ---: | ---: | ---: |
+| No discount | 7,504 | $1,816k | $472.7k | **26.0%** |
+| Up to 10% | 1,180 | $496k | $87.5k | **17.6%** |
+| Over 10 to 20% | 1,669 | $441k | $42.4k | **9.6%** |
+| Over 20 to 30% | 244 | $90k | -$4.5k | **-5.1%** |
+| Over 30 to 50% | 1,610 | $310k | -$97.4k | **-31.4%** |
+| Over 50% | 1,090 | $92k | -$99.9k | **-108.8%** |
+
+### 2. Low-margin regions
+
+Central is the biggest region by sales, with a margin just below the 12.4% overall average. The weakest margins sit in Southeast Asia and EMEA.
+
+| Region | Sales | Profit | Margin |
+| --- | ---: | ---: | ---: |
+| Central | $712k | $81.1k | **11.4%** |
+| South | $418k | $39.3k | **9.4%** |
+| EMEA | $217k | $13.5k | **6.2%** |
+| Southeast Asia | $231k | $5.8k | **2.5%** |
+
+**Best margins**
+
+| Region | Sales | Profit | Margin |
+| --- | ---: | ---: | ---: |
+| Canada | $20k | $5.1k | **25.3%** |
+| Central Asia | $181k | $36.5k | **20.1%** |
+| North Asia | $238k | $45.9k | **19.3%** |
+
+<details>
+<summary>All 13 regions, best margin first</summary>
+
+| Region | Sales | Profit | Margin |
+| --- | ---: | ---: | ---: |
+| Canada | $20k | $5.1k | 25.3% |
+| Central Asia | $181k | $36.5k | 20.1% |
+| North Asia | $238k | $45.9k | 19.3% |
+| East | $177k | $31.2k | 17.7% |
+| North | $301k | $46.8k | 15.6% |
+| West | $174k | $26.7k | 15.3% |
+| Oceania | $294k | $38.1k | 13.0% |
+| Central | $712k | $81.1k | 11.4% |
+| Africa | $191k | $21.4k | 11.3% |
+| Caribbean | $93k | $9.4k | 10.2% |
+| South | $418k | $39.3k | 9.4% |
+| EMEA | $217k | $13.5k | 6.2% |
+| Southeast Asia | $231k | $5.8k | 2.5% |
+
+</details>
+
+### 3. One loss-making sub-category
+
+**Tables** sold $186k and lost $11.0k (a -5.9% margin). It is the only one of the 17 sub-categories with a negative total profit.
+
+## Who earns what
+
+| Category | Sales | Margin |
+| --- | ---: | ---: |
+| Technology | $1,241k | 14.9% |
+| Office Supplies | $990k | 13.7% |
+| Furniture | $1,014k | 8.0% |
+
+| Segment | Share of sales | Margin |
+| --- | ---: | ---: |
+| Consumer | 51% | 11.9% |
+| Corporate | 31% | 12.6% |
+| Home Office | 18% | 13.1% |
+
+## Recommendations
+
+My reading of the numbers above:
+
+- **Put a margin check on discounts above 30%.** Above that level the margin is negative, and above 50% each dollar of sales loses about $1.09.
+- **Review pricing and costs in Southeast Asia, EMEA and South.** They bring $0.87M of sales at margins below 10%.
+- **Check the Tables line.** It is the only sub-category that loses money.
+- **Track margin next to sales** in the KPI dashboard, not sales alone.
+
+More in [`docs/business_insights.md`](docs/business_insights.md), and a PDF summary in [`presentation/`](presentation/business_insights.pdf).
+
+## Other dashboard pages
+
+Drawn in Python by [`notebooks/dashboard_visuals.ipynb`](notebooks/dashboard_visuals.ipynb).
+
+| Regional analysis | Profitability insights |
 | --- | --- |
-| Overall | $3.25M sales, $0.40M profit, 12.4% profit margin |
-| Discounts | Lines with 0% discount earn a 26.0% margin. At 30 to 50% discount the margin is -31.4% (1,610 lines), above 50% it is -108.8% (1,090 lines) |
-| Regions | Southeast Asia earns 2.5% margin on $231k sales and EMEA 6.2% on $217k. South sells $418k at 9.4%. Central is the largest region ($712k) at 11.4% |
-| Categories | Technology 14.9% margin, Office Supplies 13.7%, Furniture 8.0% |
-| Loss-making sub-category | Tables: $186k sales, $11.0k loss (-5.9% margin) |
-| Segments | Consumer brings 51% of sales, Home Office has the best margin (13.1%) |
+| ![Regional analysis](dashboard/regional_analysis.png) | ![Profitability insights](dashboard/profitability.png) |
 
-Recommendations that follow from this are in [`docs/business_insights.md`](docs/business_insights.md); the short version is to cap deep discounts, review pricing in the low-margin regions and watch loss-making sub-categories.
+## How it was built
 
-## Dashboard
-
-Three pages, generated by [`notebooks/dashboard_visuals.ipynb`](notebooks/dashboard_visuals.ipynb). A PDF summary is in [`presentation/`](presentation/business_insights.pdf).
-
-| Executive overview | Regional analysis | Profitability insights |
-| --- | --- | --- |
-| ![Executive overview](dashboard/overview.png) | ![Regional analysis](dashboard/regional_analysis.png) | ![Profitability insights](dashboard/profitability.png) |
-
-KPIs shown: total sales, total profit, profit margin, total orders, total customers, average order value.
-
-## What is in the repo
-
-```text
-.
-├── datasets/
-│   ├── raw/superstore_sales.csv            51,290 order lines, 21 columns
-│   └── cleaned/                            13,297 order lines, 26 columns, plus category and region summaries
-├── sql/                                    5 scripts, from cleaning to business questions
-├── notebooks/dashboard_visuals.ipynb       builds the 3 dashboard pages
-├── dashboard/                              the 3 dashboard images
-├── docs/                                   data dictionary and business insights
-├── presentation/business_insights.pdf
-└── requirements.txt
-```
-
-## SQL scripts
-
-| Script | Purpose |
+| Step | Where |
 | --- | --- |
-| `01_data_cleaning.sql` | Row counts, NULL checks, duplicate order IDs, category values, date check |
-| `02_sales_analysis.sql` | Total sales and orders, sales by region and category, monthly trend |
-| `03_profitability_analysis.sql` | Profit by region, lowest-profit products, margin by category |
-| `04_kpi_queries.sql` | Revenue, profit, margin, average order value, customer count |
-| `05_advanced_business_questions.sql` | High-sales low-profit regions, categories to invest in, loss-making products, segment profit |
+| SQL: cleaning checks, sales and profit analysis, KPIs, business questions | [`sql/`](sql/) (5 scripts, MySQL syntax, table `superstore_sales`) |
+| Python: dashboard pages | [`notebooks/dashboard_visuals.ipynb`](notebooks/dashboard_visuals.ipynb) |
+| Data: 51,290 raw lines, 13,297 in the cleaned file across all 7 markets, 5 columns added | [`datasets/`](datasets/), described in [`docs/data_dictionary.md`](docs/data_dictionary.md) |
 
-The scripts expect a table called `superstore_sales` loaded from the raw CSV. They use MySQL syntax (`YEAR()`, `MONTH()`, `LIMIT`).
-
-## Data
-
-- The cleaned file holds 13,297 of the 51,290 raw order lines, spread across all 7 markets.
-- Cleaning added `profit_margin_percent`, `order_year`, `order_month`, `order_month_name` and `shipping_days`.
-- Every column is described in [`docs/data_dictionary.md`](docs/data_dictionary.md).
-
-## Run the notebook
+<details>
+<summary>Run the notebook and see the folder layout</summary>
 
 ```sh
 pip install -r requirements.txt
 jupyter notebook notebooks/dashboard_visuals.ipynb
 ```
 
-The notebook reads the cleaned CSV and writes the three images into `dashboard/`.
+```text
+.
+├── datasets/        raw and cleaned data, region and category summaries
+├── sql/             5 scripts: cleaning, sales, profitability, KPIs, business questions
+├── notebooks/       dashboard_visuals.ipynb
+├── dashboard/       the 3 dashboard images
+├── docs/            data dictionary, business insights
+├── presentation/    PDF summary
+└── requirements.txt
+```
 
-## Author
+</details>
 
+---
 Dinesh Kumar Gudiputi, [LinkedIn](https://www.linkedin.com/in/dineshkumargudiputi/), [GitHub](https://github.com/dinesh-kumar-gudiputi)
